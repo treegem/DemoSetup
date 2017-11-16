@@ -100,7 +100,7 @@ class MainGui(QWidget):
 
     # On closing: Ask before closing ALL windows
     def closeEvent(self, event):
-        quit_msg = "Are you sure you want to exit? \nAll unsaved will be lost!"
+        quit_msg = "Are you sure you want to exit? \nAll unsaved data will be lost!"
         reply = QMessageBox.question(self, 'Exit',
                                      quit_msg, QMessageBox.Yes, QMessageBox.No)
         if reply == QMessageBox.Yes:
