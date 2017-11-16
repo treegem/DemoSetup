@@ -8,5 +8,3 @@ config = ConfigParser()
 config.read(os.path.join(PROJECT_PATH, 'config.ini'))
 
 paths = config['paths']
-
-print(paths)
