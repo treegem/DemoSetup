@@ -100,7 +100,7 @@ class MainGui(QWidget):
 
     # On closing: Ask before closing ALL windows
     def closeEvent(self, event):
-        quit_msg = "Are you sure you want to exit? \nAll data not saved yet will be lost!"
+        quit_msg = "Are you sure you want to exit? \nAll unsaved will be lost!"
         reply = QMessageBox.question(self, 'Exit',
                                      quit_msg, QMessageBox.Yes, QMessageBox.No)
         if reply == QMessageBox.Yes:
@@ -605,6 +605,9 @@ class FpgaGui(QWidget):
         # setting button actions
         self.btn_con.clicked.connect(self.connect)
         self.btn_discon.clicked.connect(self.disconnect)
+        self.btn_light.clicked.connect(self.light)
+        self.btn_night.clicked.connect(self.night)
+        self.btn_pulse.clicked.connect(self.pulse)
 
         # setting input box actions
         self.box_port1.editingFinished.connect(self.setSettings)
@@ -695,6 +698,17 @@ class FpgaGui(QWidget):
             self.label_stat2.setText("Disconnected")
         else:
             self.label_stat2.setText("Failed to disconnect")
+
+    def light(self):
+        self.backend.fpga.open()
+
+    def night(self):
+        self.backend.fpga.night()
+
+    def pulse(self):
+        on = self.spin_on.value()
+        off = self.spin_off.value()
+        self.backend.fpga.Sequence([(['Laser'], on), ([], off)])
 
     # Write Fpga settings
     def setSettings(self):

@@ -1,41 +1,39 @@
 # -*- coding: utf-8 -*-
+import math
 import os
-BITFILE_12X8 = os.path.join(os.path.dirname(__file__), 'PulseGenerator12x8.bit')
-#the FPGA bitfile is assumed to be located in the same directory as the present file
-BITFILE_24X4 = os.path.join(os.path.dirname(__file__), 'PulseGenerator24x4.bit')
-#the FPGA bitfile is assumed to be located in the same directory as the present file
-
+import struct
 import time
 
-import ok
 import numpy as np
-import struct
-import math
 
-#import logging
-#old channel_map={'aom':0,'readout':1,'trig':2,'ch3':3,'mw':4,'ch5':5,'mwy':6,'ch7':7,'rf':8,'ch9':9,'ch10':10,'ch11':11,
-    #'ch12':12,'ch13':13,'ch14':14,'ch15':15,'ch16':16,'ch17':17,'ch18':18,'ch19':19,'ch20':20,'ch21':21,'ch22':22,'ch23':23}
+import ok
+
+BITFILE_12X8 = os.path.join(os.path.dirname(__file__), 'PulseGenerator12x8.bit')
+# the FPGA bitfile is assumed to be located in the same directory as the present file
+BITFILE_24X4 = os.path.join(os.path.dirname(__file__), 'PulseGenerator24x4.bit')
+# the FPGA bitfile is assumed to be located in the same directory as the present file
 
 
-class PulseGenerator():
+class PulseGenerator:
     """
     Represents an FPGA based Pulse Generator.
     """
 
     command_map = {'RUN': 0, 'LOAD': 1, 'RESET_READ': 2, 'RESET_SDRAM': 3, 'RESET_WRITE': 4, 'RETURN': 5}
     state_map = {0: 'IDLE', 1: 'RESET_READ', 2: 'RESET_SDRAM', 3: 'RESET_WRITE', 4: 'LOAD_0',
-        5: 'LOAD_1', 6: 'LOAD_2', 7: 'READ_0', 8: 'READ_1', 9: 'READ_2'}
+                 5: 'LOAD_1', 6: 'LOAD_2', 7: 'READ_0', 8: 'READ_1', 9: 'READ_2'}
 
-    ### serial numbers:
+    # serial numbers:
     # Old Pulser:
     # new Pulser: 14140008DA
-    # Tommis new Pulser: 1414008F5
+    # Tommy's new Pulser: 1414008F5
     channel_map = {'aom': 0, 'readout': 1, 'trig': 2, 'ch3': 3, 'mw': 4, 'ch5': 5, 'mwy': 6, 'ch7': 7,
-        'rf': 8, 'ch9': 9, 'ch10': 10, 'ch11': 11, 'ch12': 12, 'ch13': 13, 'ch14': 14, 'ch15': 15,
-        'ch16': 16, 'ch17': 17, 'ch18': 18, 'ch19': 19, 'ch20': 20, 'ch21': 21, 'ch22': 22, 'ch23': 23}
-    #channel_map = {'aom': 0, 'mw': 1, 'mwy': 2, 'trig': 3, 'rf': 4, 'readout': 5, 'ch6': 6, 'ch7': 7,
-        #'ch8': 8, 'ch9': 9, 'ch10': 10, 'ch11': 11, 'ch12': 12, 'ch13': 13, 'ch14': 14, 'ch15': 15,
-        #'ch16': 16, 'ch17': 17, 'ch18': 18, 'ch19': 19, 'ch20': 20, 'ch21': 21, 'ch22': 22, 'ch23': 23}
+                   'rf': 8, 'ch9': 9, 'ch10': 10, 'ch11': 11, 'ch12': 12, 'ch13': 13, 'ch14': 14, 'ch15': 15,
+                   'ch16': 16, 'ch17': 17, 'ch18': 18, 'ch19': 19, 'ch20': 20, 'ch21': 21, 'ch22': 22, 'ch23': 23}
+
+    # channel_map = {'aom': 0, 'mw': 1, 'mwy': 2, 'trig': 3, 'rf': 4, 'readout': 5, 'ch6': 6, 'ch7': 7,
+    # 'ch8': 8, 'ch9': 9, 'ch10': 10, 'ch11': 11, 'ch12': 12, 'ch13': 13, 'ch14': 14, 'ch15': 15,
+    # 'ch16': 16, 'ch17': 17, 'ch18': 18, 'ch19': 19, 'ch20': 20, 'ch21': 21, 'ch22': 22, 'ch23': 23}
 
     def __init__(self, serial='', channel_map=channel_map, core='12x8'):
         self.serial = serial
@@ -48,7 +46,7 @@ class PulseGenerator():
         self.checkUnderflow()
 
     def open_usb(self):
-        if (self.xem.OpenBySerial(self.serial) != 0):
+        if self.xem.OpenBySerial(self.serial) != 0:
             raise RuntimeError('failed to open USB connection.')
 
     def set_frequency(self, vco):
@@ -62,7 +60,7 @@ class PulseGenerator():
 
     def flash_fpga(self, bitfile):
         ret = self.xem.ConfigureFPGA(str(bitfile))
-        if(ret != 0):
+        if (ret != 0):
             raise RuntimeError('failed to upload bit file to fpga. Error code %i' % ret)
 
     def load_core(self, core):
@@ -172,7 +170,8 @@ class PulseGenerator():
 
     def loadPages(self, buf):
         if len(buf) % 1024 != 0:
-            raise RuntimeError('Only full SDRAM pages supported. Pad your buffer with zeros such that its length is a multiple of 1024.')
+            raise RuntimeError(
+                'Only full SDRAM pages supported. Pad your buffer with zeros such that its length is a multiple of 1024.')
         self.disableDecoder()
         self.ctrlPulser('RESET_WRITE')
         time.sleep(0.01)
@@ -210,7 +209,7 @@ class PulseGenerator():
 
     def createBitsFromChannels(self, channels):
         """
-        Convert a list of channel names into an array of bools of length N_CHANNELS,
+        Convert a list of channel names into an array of booleans of length N_CHANNELS,
         that specify the state (high or low) of each available channel.
         """
         bits = np.zeros(self.n_channels, dtype=bool)
@@ -231,7 +230,7 @@ class PulseGenerator():
         if self.core == '24x4':
             pattern = [pattern[i] | pattern[i + 1] << 4 for i in range(0, len(pattern), 2)]
         s = struct.pack('>I%iB' % len(pattern), mult, *pattern[::-1])
-        #s = s[4:]+s[2:4]+s[:2]
+        # s = s[4:]+s[2:4]+s[:2]
         swap = ''
         for i in range(len(s)):
             swap += s[i - 1 if i % 2 else i + 1]
@@ -299,7 +298,7 @@ class PulseGenerator():
                 continue
             if index > 0:  # else fill current block with pattern, reduce ticks accordingly, write block and start a new block
                 self.setBits(pattern, index, CHANNEL_WIDTH - index, bits)
-                #buf += self.pack(0,pattern)
+                # buf += self.pack(0,pattern)
                 raw += [(0, pattern)]
                 ticks -= (CHANNEL_WIDTH - index)
                 pattern = blank.copy()
@@ -310,9 +309,9 @@ class PulseGenerator():
                 if repetitions > REP_MAX:
                     multiplier = repetitions / REP_MAX
                     repetitions = repetitions % REP_MAX
-                    #buf += multiplier*self.pack(REP_MAX-1,ONES*bits)
+                    # buf += multiplier*self.pack(REP_MAX-1,ONES*bits)
                     raw += multiplier * [(REP_MAX - 1, ONES * bits)]
-                #buf += self.pack(repetitions-1,ONES*bits) # rep=0 means the block is executed once
+                # buf += self.pack(repetitions-1,ONES*bits) # rep=0 means the block is executed once
                 raw += [(repetitions - 1, ONES * bits)]
             if index > 0:
                 pattern = blank.copy()
@@ -321,30 +320,30 @@ class PulseGenerator():
         if loops < 0:  # don't insert end marker so there is no loop count down
             if index > 0:  # fill up incomplete block with the padding bits
                 self.setBits(pattern, index, CHANNEL_WIDTH - index, pad_bits)
-                #buf += self.pack(0,pattern)
+                # buf += self.pack(0,pattern)
                 raw += [(0, pattern)]
         else:  # insert end marker
             if index > 0:  # fill up the incomplete block with pad bits, set the end marker
                 self.setBits(pattern, index, CHANNEL_WIDTH - index, pad_bits)
-                #buf += self.pack(1<<31,pattern)
+                # buf += self.pack(1<<31,pattern)
                 raw += [(1 << 31, pattern)]
             else:  # insert the end marker into the last command and append another end marker
                 repetitions, pattern = raw.pop()
                 raw += [(1 << 31 | repetitions, pattern)]
-                #buf += self.pack(1<<31,ONES*pad_bits)
+                # buf += self.pack(1<<31,ONES*pad_bits)
                 raw += [(1 << 31, ONES * pad_bits)]
-            #buf += self.pack(1<<31,ONES*bits)
-            #buf += self.pack(1<<31,ONES*bits)
+                # buf += self.pack(1<<31,ONES*bits)
+                # buf += self.pack(1<<31,ONES*bits)
         raw += [(1 << 31, ONES * pad_bits)]
-        #print "buf has",len(buf)," bytes"
+        # print "buf has",len(buf)," bytes"
         for instr in raw:
             buf += self.pack(*instr)
 
         pad_instr = self.pack(1 << 31, ONES * pad_bits)
         while len(buf) % 1024:
             buf += pad_instr
-        #buf=buf+((1024-len(buf))%1024)*'\x00' # pad buffer with zeros so it matches SDRAM / FIFO page size
-        #print "buf has",len(buf)," bytes"
+        # buf=buf+((1024-len(buf))%1024)*'\x00' # pad buffer with zeros so it matches SDRAM / FIFO page size
+        # print "buf has",len(buf)," bytes"
         self.raw = raw
         return buf
 
@@ -393,7 +392,7 @@ class PulseGenerator():
         self.setContinuous(channels)
 
     def sequence(self, sequence, loop=None):
-        if sequence.__len__() < 200:   # This makes sure that the length of the sequence is at least 200. This is needed for the Pulser.
+        if sequence.__len__() < 200:  # This makes sure that the length of the sequence is at least 200. This is needed for the Pulser.
             print "lengthening the sequence"
             sequence *= int(math.ceil(float(200) / sequence.__len__()))
         # self.setSequence(sequence, loop=True)
@@ -408,6 +407,7 @@ class PulseGenerator():
     def open(self):
         self.setContinuous(0xffff)
 
+
 ########## TESTCODE############
 
 if __name__ == '__main__':
@@ -416,11 +416,13 @@ if __name__ == '__main__':
 
     sequence = [(['ch1'], 1000)] + 10 * [(['ch0'], 1000), ([], 1000)] + [([], 1000)]
 
-    #sequence = [(['ch1'],6.)] + 100 * [ (['ch0'],6.0), ([],1000.)]
+    # sequence = [(['ch1'],6.)] + 100 * [ (['ch0'],6.0), ([],1000.)]
 
     pg.setSequence(sequence, loops=-1, triggered=False)
-    #all = [ 'ch'+str(i) for i in range(1,12)]
-    #pg.setSequence(sequence)
+
+
+    # all = [ 'ch'+str(i) for i in range(1,12)]
+    # pg.setSequence(sequence)
 
     def test():
         n = 0
