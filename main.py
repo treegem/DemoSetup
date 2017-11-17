@@ -728,7 +728,7 @@ class Main:
         # Start the vco
         self.powerVcc(True)
         # Use a "on"-sequence for the calibration
-        self.seq('On')
+        self.seq = 'On'
         # Write the applied voltages into vtune
         self.vtune = minvolt
         # Set the mode again to update the gui
