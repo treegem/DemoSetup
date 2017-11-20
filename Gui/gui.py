@@ -9,6 +9,7 @@ from PyQt4.QtCore import pyqtSignal, QSettings  # , QThread, QObject,
 from PyQt4.QtGui import QWidget, QMessageBox, QLineEdit, QSpinBox, QDoubleSpinBox, QSlider
 
 from utility.config import paths
+from utility.directory_management import assert_parent_directory
 
 path = sys.path[0] + "\Gui"
 
@@ -1328,6 +1329,7 @@ class OdmrGui(QWidget):
     # Saves the current measurement
     def save(self):
         path = str(self.line_file.text())
+        assert_parent_directory(path)
         self.label_stat2.setText("Saving ODMR...")
         if self.backend.saveOdmr(path):
             self.label_stat2.setText("ODMR saved")
@@ -1550,6 +1552,7 @@ class RabiGui(QWidget):
     # Saves the current measurement
     def save(self):
         path = str(self.line_file.text())
+        assert_parent_directory(path)
         self.label_stat2.setText("Saving Rabi...")
         if self.backend.saveRabi(path):
             self.label_stat2.setText("Rabi saved")
