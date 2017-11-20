@@ -21,18 +21,18 @@ def load_data(path):
     return np.loadtxt(fname=path, skiprows=14, usecols=[1, 3], delimiter=';')[::mes_per_point]
 
 
-def run_main():
-    for f in os.listdir(MES_PATH):
+def run_main(path):
+    for f in os.listdir(path):
         if not f.endswith('.txt'):
             continue
 
-        full_path = os.path.join(MES_PATH, f)
+        full_path = os.path.join(path, f)
 
         mes_data_raw = load_data(path=full_path)
-        plot_data(f, mes_data_raw)
+        plot_data(f, mes_data_raw, path)
 
         corrected_data = linear_correct(mes_data_raw, n_points=3, lskip=3, rskip=3)
-        plot_data(f, corrected_data, description='corrected')
+        plot_data(f, corrected_data, path, description='corrected')
 
 
 def linear_correct(raw_data, n_points, lskip, rskip):
@@ -52,14 +52,15 @@ def linear_correct(raw_data, n_points, lskip, rskip):
     return corrected_data
 
 
-def plot_data(f, mes_data, description='raw'):
+def plot_data(f, mes_data, path, description='raw'):
     plt.close('all')
     plt.figure(figsize=(7, 5))
     plt.plot(mes_data[:, 0], mes_data[:, 1])
     f_name = os.path.splitext(f)[0]
-    plt.savefig(os.path.join(MES_PATH, '{}_{}.jpg'.format(f_name, description)))
+    plt.savefig(os.path.join(path, '{}_{}.jpg'.format(f_name, description)))
 
 
 if __name__ == '__main__':
-    MES_PATH = str(paths['saves'])
-    run_main()
+    FOLDER = '171120_odmr_rabi'
+    MES_PATH = os.path.join(paths['saves'], FOLDER, 'odmr')
+    run_main(MES_PATH)
