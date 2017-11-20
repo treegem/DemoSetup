@@ -956,6 +956,7 @@ class MwGui(QWidget):
 
         # Restoring last settings
         loadSettings(self, QSettings("SAppel", "DemoMw"))
+        self.line_file.set_Text('georg')
 
         # Connecting to the program
         self.backend = backend
