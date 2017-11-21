@@ -3,9 +3,13 @@ import sys
 import threading
 import time
 
+import os
 from PyQt4 import uic  # , QtCore, QtGui
 from PyQt4.QtCore import pyqtSignal, QSettings  # , QThread, QObject,
 from PyQt4.QtGui import QWidget, QMessageBox, QLineEdit, QSpinBox, QDoubleSpinBox, QSlider
+
+from utility.config import paths
+from utility.directory_management import assert_parent_directory
 
 path = sys.path[0] + "\Gui"
 
@@ -57,6 +61,7 @@ class MainGui(QWidget):
 
         # Restoring last settings
         loadSettings(self, QSettings("SAppel", "DemoMain"))
+        self.line_path1.setText(paths['saves'])
 
         # Connecting to the logical program behind
         self.backend = backend
@@ -956,6 +961,7 @@ class MwGui(QWidget):
 
         # Restoring last settings
         loadSettings(self, QSettings("SAppel", "DemoMw"))
+        self.line_file.setText(os.path.join(paths['calibrations'], 'zx05-c42_171117.txt'))
 
         # Connecting to the program
         self.backend = backend
@@ -1140,6 +1146,7 @@ class OdmrGui(QWidget):
 
         # Restoring last settings
         loadSettings(self, QSettings("SAppel", "DemoOdmr"))
+        self.line_file.setText(os.path.join(paths['saves'], 'odmr'))
 
         # Connecting to the program
         self.backend = backend
@@ -1322,6 +1329,7 @@ class OdmrGui(QWidget):
     # Saves the current measurement
     def save(self):
         path = str(self.line_file.text())
+        assert_parent_directory(path)
         self.label_stat2.setText("Saving ODMR...")
         if self.backend.saveOdmr(path):
             self.label_stat2.setText("ODMR saved")
@@ -1354,6 +1362,7 @@ class RabiGui(QWidget):
 
         # Restoring last settings
         loadSettings(self, QSettings("SAppel", "DemoRabi"))
+        self.line_file.setText(os.path.join(paths['saves'], 'pulsed'))
 
         # Connecting to the program
         self.backend = backend
@@ -1543,6 +1552,7 @@ class RabiGui(QWidget):
     # Saves the current measurement
     def save(self):
         path = str(self.line_file.text())
+        assert_parent_directory(path)
         self.label_stat2.setText("Saving Rabi...")
         if self.backend.saveRabi(path):
             self.label_stat2.setText("Rabi saved")
