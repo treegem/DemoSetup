@@ -31,7 +31,7 @@ def run_main():
         mes_data_raw = load_data(path=full_path)
         plot_data(f, mes_data_raw)
 
-        corrected_data = linear_correct(mes_data_raw, n_points=3, lskip=3, rskip=3)
+        corrected_data = linear_correct(mes_data_raw, n_points=4, lskip=1, rskip=1)
         plot_data(f, corrected_data, description='corrected')
 
 
