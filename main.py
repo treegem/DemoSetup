@@ -1052,6 +1052,8 @@ class Main:
         Off = 'Off'
         On = 'On'
         # Start measuring
+        self.writeSeq(eval(seq))
+        time.sleep(5)  # warmup
         while self.modCam == 5 and self.modLabJack == 5 and t <= maxtime:
             self.writeSeq(eval(seq))
             # Calculate the achieved time t from the time resolution of the fpga

@@ -18,12 +18,12 @@ def corrected_data(data_paths):
 
 
 if __name__ == '__main__':
-    FOLDER = '171121_odmr_rabis_echos'
+    FOLDER = '171122_odmr_rabis_echos'
     MES_PATH = os.path.join(paths['saves'], FOLDER, 'pulsed')
-    data_name = 'diamond9_8_rabi.txt'
-    correction_name = 'diamond9_8_rabi_mw_off.txt'
+    data_name = 'diamond9_rabi_static.txt'
+    correction_name = 'diamond9_rabi_static_off.txt'
     run_main({'data': os.path.join(MES_PATH, data_name),
               'correction': os.path.join(MES_PATH, correction_name),
               'parent': MES_PATH},
              filename=os.path.splitext(data_name)[0],
-             ending='_mw_off')
+             ending='')
