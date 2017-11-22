@@ -86,12 +86,12 @@ class Main:
                             [0.0, 5.0]]  # Array for storing the vco-calibration data. Initialize with a linear
         self.settingsCalibration = None  # List of settings for a calibration measurement
         self.customSeqs = {
-            'Rabi': "[(['Mw'], t), ([], 1000)]",
-            'Ramsey': "[(['Mw'], 20), ([], t), (['Mw'], 20), ([], 1000)]",
-            'Echo': "[(['Mw'], 20), ([], 100), (['Mw'], 40), ([], t), (['Mw'], 20), ([], 1000)]",
+            'Rabi': "[(['Laser'], 1000), ([], 1500), (['Mw'], t), ([], 100)]",
+            'Ramsey': "[(['Laser'], 1000), ([], 1500), (['Mw'], 20), ([], t), (['Mw'], 20), ([], 1000)]",
+            'Echo': "[(['Laser'], 1000), ([], 1500), (['Mw'], 20), ([], 100), (['Mw'], 40), ([], t), (['Mw'], 20), ([], 1000)]",
             'On': "On",
             'Off': "Off",
-            'Demo': "[(['Mw'], 1000), ([], 1000)]"}  # Custom sequences that can be easily loaded from the gui
+            'Demo': "[(['Laser'], 1000), ([], 1500), (['Mw'], 1000), ([], 1000)]"}  # Custom sequences that can be easily loaded from the gui
 
         # Odmr information
         self.odmr = [[], [], [],
