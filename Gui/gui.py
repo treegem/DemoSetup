@@ -146,6 +146,7 @@ class MainGui(QWidget):
         self.guiCam.getCams()
         cam_name = self.guiCam.list_cams.item(0).text()
         self.guiCam.connectCam(cam=cam_name)
+        self.guiCam.startStream()
 
     def connect_labjack(self):
         self.guiLabJack.getLabJacks()
