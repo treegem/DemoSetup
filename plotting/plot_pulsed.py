@@ -41,6 +41,6 @@ def run_main(path):
 
 
 if __name__ == '__main__':
-    FOLDER = '171122_odmr_rabis_echos'
+    FOLDER = '171122_rabis'
     MES_PATH = os.path.join(paths['saves'], FOLDER, 'pulsed')
     run_main(MES_PATH)
