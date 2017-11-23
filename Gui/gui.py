@@ -99,6 +99,7 @@ class MainGui(QWidget):
         self.btn_odmr.clicked.connect(self.guiOdmr.show)
         self.btn_rabi.clicked.connect(self.guiRabi.show)
         self.btn_path.clicked.connect(self.setSavepath)
+        self.btn_auto_connect.clicked.connect(self.auto_connect)
 
         # Show the main gui
         self.show()
@@ -134,6 +135,25 @@ class MainGui(QWidget):
     def setSavepath(self):
         if self.backend.setSavepath(str(self.line_path1.text())):
             self.line_path2.setText(self.line_path1.text())
+
+    # Connect to standard devices
+    def auto_connect(self):
+        self.connect_fpga()
+        self.connect_labjack()
+        self.connect_camera()
+
+    def connect_camera(self):
+        self.guiCam.getCams()
+        cam_name = self.guiCam.list_cams.item(0).text()
+        self.guiCam.connectCam(cam=cam_name)
+
+    def connect_labjack(self):
+        self.guiLabJack.getLabJacks()
+        labjack_serial = self.guiLabJack.list_labjacks.item(0).text()
+        self.guiLabJack.connectLabJack(serial=labjack_serial)
+
+    def connect_fpga(self):
+        self.guiFpga.connect()
 
 
 '''
@@ -298,8 +318,9 @@ class CamGui(QWidget):
         self.list_cams.addItems(cams)
 
     # Connects the selcted cam and transmits the initial settings
-    def connectCam(self):
-        cam = self.list_cams.currentItem().text()
+    def connectCam(self, cam=None):
+        if cam is None:
+            cam = self.list_cams.currentItem().text()
         self.label_stat2.setText("Connecting...")
         if self.backend.connectCam(cam):
             self.label_stat2.setText("Connected")
@@ -499,8 +520,9 @@ class LabJackGui(QWidget):
         self.list_labjacks.addItems(labjacks)
 
     # Connects the selcted LabJack and transmits the initial settings
-    def connectLabJack(self):
-        serial = int(self.list_labjacks.currentItem().text())
+    def connectLabJack(self, serial=None):
+        if serial is None:
+            serial = int(self.list_labjacks.currentItem().text())
         self.label_stat2.setText("Connecting...")
         if self.backend.connectLabJack(serial):
             self.label_stat2.setText("Connected")

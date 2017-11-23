@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>410</width>
-    <height>268</height>
+    <height>272</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -123,6 +123,25 @@
           </property>
           <property name="text">
            <string>FPGA</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btn_auto_connect">
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>100</width>
+            <height>100</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>AutoConnect</string>
           </property>
          </widget>
         </item>
