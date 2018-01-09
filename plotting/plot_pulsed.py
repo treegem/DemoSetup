@@ -9,7 +9,7 @@ from utility.config import paths
 def plot_data(f, mes_data, path, description='raw', skip=0):
     plt.close('all')
     plt.figure(figsize=(7, 5))
-    plt.plot(mes_data[skip:, 0], mes_data[skip:, 1])
+    plt.plot(mes_data[skip:, 0], mes_data[skip:, 1],'.')
     f_name = os.path.splitext(f)[0]
     plt.savefig(os.path.join(path, '{}_{}.jpg'.format(f_name, description)))
 
@@ -41,6 +41,6 @@ def run_main(path):
 
 
 if __name__ == '__main__':
-    FOLDER = '171122_rabis'
+    FOLDER = ''
     MES_PATH = os.path.join(paths['saves'], FOLDER, 'pulsed')
     run_main(MES_PATH)
