@@ -1558,8 +1558,9 @@ class RabiGui(QWidget):
         seq = str(self.line_seq.text())
         count = self.box_count.value()
         freq = self.box_freq.value()
+        cycles = self.box_warmup.value()
         self.label_stat2.setText("Starting Rabi...")
-        if self.backend.startRabi(mintime, maxtime, steptime, seq, count, freq):
+        if self.backend.startRabi(mintime, maxtime, steptime, seq, count, freq, cycles):
             self.label_stat2.setText("Rabi started")
         else:
             self.label_stat2.setText("Failed to start Rabi")

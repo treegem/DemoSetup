@@ -999,16 +999,9 @@ class Main:
     # ********
 
     # Start a rabi-measurement if both cam and labjack are connected and not measuring
-    def startRabi(self, mintime, maxtime, steptime, seq, count, freq):
+    def startRabi(self, mintime, maxtime, steptime, seq, count, freq, cycles):
         if (self.modCam == 1 or self.modCam == 2) and (self.modLabJack == 1 or self.modLabJack == 2):
             try:
-                # try translating the sequence
-                # Test for the initial time t
-                t = mintime
-                # Just in case somebody misses the apostrophes, On and Off will work as well
-                Off = 'Off'
-                On = 'On'
-                eval(seq)
                 # Save the current modes for later and stop stream and manual control
                 self.lastModCam = self.modCam
                 self.stopStream()
@@ -1024,7 +1017,7 @@ class Main:
                     freq = minimum
                 if freq > maximum:
                     freq = maximum
-                self.settingsRabi = [mintime, maxtime, steptime, seq, count, freq]
+                self.settingsRabi = [mintime, maxtime, steptime, seq, count, freq, cycles]
                 # Start the rabi in the LabJack thread (it really doesn't matter which thread you use here)
                 self.threadLabJack = threading.Thread(target=self.measureRabi)
                 self.threadLabJack.start()
@@ -1036,7 +1029,7 @@ class Main:
 
     def measureRabi(self):
         # get the settings
-        [mintime, maxtime, steptime, seq, count, freq] = self.settingsRabi
+        [mintime, maxtime, steptime, seq, count, freq, cycles] = self.settingsRabi
         # Start the vco
         self.powerVcc(True)
         # Tune the vco using the calibration
@@ -1052,7 +1045,7 @@ class Main:
         Off = 'Off'
         On = 'On'
 
-        self.diode_warmup(count, seq, t, cycles=10)
+        self.diode_warmup(count, seq, t, cycles=cycles)
 
         # Start measuring
         while self.modCam == 5 and self.modLabJack == 5 and t <= maxtime:
@@ -1094,9 +1087,9 @@ class Main:
 
     def diode_warmup(self, count, seq, t, cycles):
         # warmup diode, to stabilize the light output from the beginning
-        while self.modCam == 5 and self.modLabJack == 5:
+        if self.modCam == 5 and self.modLabJack == 5:
+            self.writeSeq(eval(seq))
             for i in range(cycles):
-                self.writeSeq(eval(seq))
                 # start a sum for the average intensity
                 sumIntensity = 0
                 j = 0
