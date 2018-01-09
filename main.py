@@ -1051,9 +1051,10 @@ class Main:
         t = mintime
         Off = 'Off'
         On = 'On'
+
+        self.diode_warmup(count, seq, t, cycles=10)
+
         # Start measuring
-        self.writeSeq(eval(seq))
-        time.sleep(5)  # warmup
         while self.modCam == 5 and self.modLabJack == 5 and t <= maxtime:
             self.writeSeq(eval(seq))
             # Calculate the achieved time t from the time resolution of the fpga
@@ -1090,6 +1091,31 @@ class Main:
 
         # Autostop at the end
         self.stopRabi()
+
+    def diode_warmup(self, count, seq, t, cycles):
+        # warmup diode, to stabilize the light output from the beginning
+        while self.modCam == 5 and self.modLabJack == 5:
+            for i in range(cycles):
+                self.writeSeq(eval(seq))
+                # start a sum for the average intensity
+                sumIntensity = 0
+                j = 0
+                while (self.modCam == 5 and self.modLabJack == 5) and j < count:
+                    # get an image
+                    self.readImage()
+                    # Append the data
+                    self.rabi[0].append(t)
+                    self.rabi[1].append(self.intensity)
+                    # For now, just write the intensity here
+                    self.rabi[2].append(self.intensity)
+                    # Sum up the intensities
+                    sumIntensity += self.intensity
+                    j += 1
+                # Calculate the average intensity and overwrite all previously written entries for this time
+                avgIntensity = sumIntensity / float(j)
+                for k in range(j):
+                    (self.rabi[2])[-k - 1] = avgIntensity
+        self.rabi = [[], [], []]
 
     # Stop a running rabi measurement
     def stopRabi(self):
