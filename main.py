@@ -1088,8 +1088,12 @@ class Main:
     def diode_warmup(self, count, seq, t, cycles):
         # warmup diode, to stabilize the light output from the beginning
         if self.modCam == 5 and self.modLabJack == 5:
-            self.writeSeq(eval(seq))
+            q = 0
             for i in range(cycles):
+                self.writeSeq(eval(seq))
+                dt = self.fpga.dt
+                q = dt * int(round(t / dt))
+                time.sleep(.1)
                 # start a sum for the average intensity
                 sumIntensity = 0
                 j = 0
