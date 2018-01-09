@@ -4,10 +4,10 @@ from plotting.plot_pulsed import load_data, plot_data
 from utility.config import paths
 
 
-def run_main(data_paths, filename, ending=''):
+def run_main(data_paths, filename, ending='', skip=0):
     data_corrected = corrected_data(data_paths)
     filename = '{}_diff{}'.format(filename, ending)
-    plot_data(filename, data_corrected, data_paths['parent'])
+    plot_data(filename, data_corrected, data_paths['parent'], skip=skip)
 
 
 def corrected_data(data_paths):
@@ -26,4 +26,5 @@ if __name__ == '__main__':
               'correction': os.path.join(MES_PATH, correction_name),
               'parent': MES_PATH},
              filename=os.path.splitext(data_name)[0],
-             ending='')
+             ending='',
+             skip=0)

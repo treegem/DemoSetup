@@ -6,10 +6,10 @@ import numpy as np
 from utility.config import paths
 
 
-def plot_data(f, mes_data, path, description='raw'):
+def plot_data(f, mes_data, path, description='raw', skip=0):
     plt.close('all')
     plt.figure(figsize=(7, 5))
-    plt.plot(mes_data[:, 0], mes_data[:, 1])
+    plt.plot(mes_data[skip:, 0], mes_data[skip:, 1])
     f_name = os.path.splitext(f)[0]
     plt.savefig(os.path.join(path, '{}_{}.jpg'.format(f_name, description)))
 
