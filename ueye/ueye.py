@@ -82,7 +82,7 @@ class UEyeCamera (Camera):
 
         #no auto blacklevel
         blacklevel_mode = ctypes.c_int(IS_AUTO_BLACKLEVEL_OFF)
-        blacklevel_offset = ctypes.c_int(255)
+        blacklevel_offset = ctypes.c_int(10)
         err = dll.is_Blacklevel(self.cam, IS_BLACKLEVEL_CMD_SET_MODE, ctypes.byref(blacklevel_mode), ctypes.sizeof(blacklevel_mode))
         if err != IS_SUCCESS:
             print "UEyeCamera Warning: failed to switch off auto blacklevel, err code " + str(err)

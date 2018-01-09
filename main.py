@@ -1054,7 +1054,7 @@ class Main:
             dt = self.fpga.dt
             t = dt * int(round(t / dt))
             # Wait a short time to be on the safe side
-            time.sleep(.1)
+            # time.sleep(.1)
             # Check wether the applied time differs from the last applied time
             # If it does, start measuring. If not, increase further
             if t != lastt:

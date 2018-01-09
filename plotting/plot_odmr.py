@@ -61,6 +61,6 @@ def plot_data(f, mes_data, path, description='raw'):
 
 
 if __name__ == '__main__':
-    FOLDER = '171120_odmr_rabi'
+    FOLDER = ''
     MES_PATH = os.path.join(paths['saves'], FOLDER, 'odmr')
     run_main(MES_PATH)
