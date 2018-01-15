@@ -844,11 +844,11 @@ class Main:
     def startOdmr(self, minfreq, maxfreq, stepfreq, count, seq):
         if (self.modCam == 1 or self.modCam == 2) and (self.modLabJack == 1 or self.modLabJack == 2):
             try:
-                # Try to translate the sequence
-                # Just in case somebody misses the apostrophes, On and Off will work as well
-                Off = 'Off'
-                On = 'On'
-                eval(seq)
+                # # Try to translate the sequence
+                # # Just in case somebody misses the apostrophes, On and Off will work as well
+                # Off = 'Off'
+                # On = 'On'
+                # eval(seq)
                 # Save the current modes for later and stop stream and manual control
                 self.lastModCam = self.modCam
                 self.stopStream()
@@ -1053,8 +1053,7 @@ class Main:
             # Calculate the achieved time t from the time resolution of the fpga
             dt = self.fpga.dt
             t = dt * int(round(t / dt))
-            # Wait a short time to be on the safe side
-            # time.sleep(.1)
+
             # Check wether the applied time differs from the last applied time
             # If it does, start measuring. If not, increase further
             if t != lastt:
